@@ -1,0 +1,78 @@
+﻿using System.Linq.Expressions;
+using HotChocolate.Execution.Processing;
+using HotChocolate.Resolvers;
+
+namespace GaN8373.HotChocolate.Extensions.FreeSQL.Extensions;
+
+public static class HotChocolateProjectionSelectorExt
+{
+    public static Expression<Func<T, T>> ExtractProjectionSelector<T>(this IResolverContext context, Expression<Func<T, T>>? customAssignment = null)
+        where T : class, new()
+    {
+        return TryExtractProjectionSelector(context, customAssignment) ?? (t => new T());
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="context"></param>
+    /// <param name="customAssignment">要 t => new T{ XXX = t.XXX }</param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    public static Expression<Func<T, T>>? TryExtractProjectionSelector<T>(this IResolverContext context, Expression<Func<T, T>>? customAssignment = null)
+        where T : class
+    {
+        var contextSelection = context.Selection;
+        Expression<Func<T, T>>? asSelector = contextSelection.AsSelector<T>();
+        var newBindings = new List<MemberBinding>();
+
+        var memberInitExpression = asSelector?.Body as MemberInitExpression;
+        if (memberInitExpression != null)
+        {
+            newBindings.AddRange(ExtractMemberBindings(memberInitExpression));
+        }
+
+        var customAssignmentBody = customAssignment?.Body as MemberInitExpression;
+        if (customAssignmentBody != null)
+        {
+            newBindings.AddRange(ExtractMemberBindings(customAssignmentBody));
+        }
+
+        if (newBindings.Count == 0)
+        {
+            return null;
+        }
+
+        // 使用原始的 NewExpression 和新的 Bindings 创建一个新的 MemberInitExpression
+        var newMemberInitExpression = Expression.MemberInit(memberInitExpression?.NewExpression ?? customAssignmentBody?.NewExpression!, newBindings);
+
+        var newSelector = Expression.Lambda<Func<T, T>>(newMemberInitExpression, asSelector?.Parameters ?? customAssignment?.Parameters);
+
+        return newSelector;
+    }
+
+
+    public static IEnumerable<MemberBinding> ExtractMemberBindings(MemberInitExpression memberInitExpression)
+    {
+        var newBindings = new List<MemberBinding>();
+
+        foreach (var binding in memberInitExpression.Bindings)
+            switch (binding)
+            {
+                // 如果是 ConditionalExpression，则取其 IfFalse (else) 部分
+                case MemberAssignment { Expression: ConditionalExpression conditionalExpression } memberAssignment:
+                    newBindings.Add(Expression.Bind(memberAssignment.Member, conditionalExpression.IfFalse));
+                    break;
+                // 否则保持不变
+                case MemberAssignment:
+                    newBindings.Add(binding);
+                    break;
+                default:
+                    // 其他类型的绑定，例如 MemberListBinding 或 MemberMemberBinding，这里简单保持不变
+                    newBindings.Add(binding);
+                    break;
+            }
+
+        return newBindings;
+    }
+}
