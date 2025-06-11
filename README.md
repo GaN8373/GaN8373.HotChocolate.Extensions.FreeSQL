@@ -19,6 +19,6 @@
 
         var list = projectionSelector == null ? [] : select.ToList(projectionSelector);
 
-        return PagingUtil.CreateConnection(list, paging, t => t.UserId.ToString());
+        return ConnectionFactory.CreateConnection(list, paging, t => t.UserId.ToString());
     }
 ```
