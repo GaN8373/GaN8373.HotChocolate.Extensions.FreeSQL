@@ -6,6 +6,10 @@ namespace GaN8373.HotChocolate.Extensions.FreeSQL.Extensions;
 
 public static class HotChocolateProjectionSelectorExt
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <inheritdoc cref="TryExtractProjectionSelector{T}"/>
     public static Expression<Func<T, T>> ExtractProjectionSelector<T>(this IResolverContext context, Expression<Func<T, T>>? customAssignment = null)
         where T : class, new()
     {
@@ -16,7 +20,7 @@ public static class HotChocolateProjectionSelectorExt
     /// 
     /// </summary>
     /// <param name="context"></param>
-    /// <param name="customAssignment">要 t => new T{ XXX = t.XXX }</param>
+    /// <param name="customAssignment">要 t => new T{ XXX = t.XXX }, 将成员绑定合gql选择的字段绑定, 查询时强制包含这些字段, 尽管这些字段在返回给前端后仍然会被裁剪, 但是后端进行处理时可以确定这些字段是非空的</param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
     public static Expression<Func<T, T>>? TryExtractProjectionSelector<T>(this IResolverContext context, Expression<Func<T, T>>? customAssignment = null)

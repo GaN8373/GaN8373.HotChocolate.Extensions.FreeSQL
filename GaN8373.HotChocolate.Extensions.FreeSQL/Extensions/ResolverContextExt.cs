@@ -15,7 +15,7 @@ public static class ResolverContextExt
     /// <tip>要手动include</tip>
     /// <returns></returns>
     /// <required>
-    ///     <see cref="UsePagingAttribute" />
+    ///     <see cref="HotChocolate.Types.UsePagingAttribute" />
     ///     <see cref="UseFilteringAttribute" />
     ///     <see cref="UseSortingAttribute" />
     /// </required>
@@ -30,19 +30,10 @@ public static class ResolverContextExt
         return select;
     }
 
-    /// <summary>
-    ///     填充GraphQL参数到select
+    ///  <summary>
+    /// 
     /// </summary>
-    /// <param name="db"></param>
-    /// <param name="context"></param>
-    /// <typeparam name="T"></typeparam>
-    /// <tip>要手动include</tip>
-    /// <returns></returns>
-    /// <required>
-    ///     <see cref="UsePagingAttribute" />
-    ///     <see cref="UseFilteringAttribute" />
-    ///     <see cref="UseSortingAttribute" />
-    /// </required>
+    /// <inheritdoc cref="FillGraphqlParams{T}(HotChocolate.Resolvers.IResolverContext,IFreeSql)"/>
     public static ISelect<T> FillGraphqlParams<T>(this IResolverContext context, IFreeSql db, out BasePagingInfo paging)
         where T : class
     {
