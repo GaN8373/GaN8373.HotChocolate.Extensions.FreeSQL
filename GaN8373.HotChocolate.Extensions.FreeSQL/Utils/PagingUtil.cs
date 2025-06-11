@@ -1,6 +1,5 @@
 ﻿using FreeSql.Internal.Model;
 using GaN8373.HotChocolate.Extensions.FreeSQL.Extensions;
-using GreenDonut.Data;
 using HotChocolate.Types.Pagination;
 
 namespace GaN8373.HotChocolate.Extensions.FreeSQL.Utils;
@@ -15,10 +14,10 @@ public class PagingUtil
         return new Connection<T>(readOnlyCollection, new ConnectionPageInfo(paging.HasNextPage(), paging.HasPreviousPage(), null, null), (int)paging.Count);
     }
 
-    public static PageConnection<T> CreatePageConnection<T>(IEnumerable<T> queryable, BasePagingInfo paging, Func<T, string> createCursor, int maxRelativeCursorCount = 5)
-    {
-        var page = new Page<T>([..queryable], paging.HasNextPage(), paging.HasPreviousPage(), createCursor, (int?)paging.Count);
-
-        return new PageConnection<T>(page, maxRelativeCursorCount);
-    }
+    // public static PageConnection<T> CreatePageConnection<T>(IEnumerable<T> queryable, BasePagingInfo paging, Func<T, string> createCursor, int maxRelativeCursorCount = 5)
+    // {
+    //     var page = new Page<T>([..queryable], paging.HasNextPage(), paging.HasPreviousPage(), createCursor, (int?)paging.Count);
+    //
+    //     return new PageConnection<T>(page, maxRelativeCursorCount);
+    // }
 }
