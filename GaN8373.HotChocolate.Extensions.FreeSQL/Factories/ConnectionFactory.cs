@@ -2,9 +2,9 @@
 using GaN8373.HotChocolate.Extensions.FreeSQL.Extensions;
 using HotChocolate.Types.Pagination;
 
-namespace GaN8373.HotChocolate.Extensions.FreeSQL.Utils;
+namespace GaN8373.HotChocolate.Extensions.FreeSQL.Factories;
 
-public class PagingUtil
+public class ConnectionFactory
 {
     public static Connection<T> CreateConnection<T>(IEnumerable<T> queryable, BasePagingInfo paging, Func<T, string> createCursor)
     {
