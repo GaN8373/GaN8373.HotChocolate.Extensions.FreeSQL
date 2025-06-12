@@ -10,6 +10,7 @@ public static class HotChocolateProjectionSelectorExt
     /// 
     /// </summary>
     /// <inheritdoc cref="TryExtractProjectionSelector{T}"/>
+    /// <returns>如果gql没有选择任何字段，并且 customAssignment为空，则会选择所有字段</returns>
     public static Expression<Func<T, T>> ExtractProjectionSelector<T>(this IResolverContext context, Expression<Func<T, T>>? customAssignment = null)
         where T : class, new()
     {
