@@ -34,13 +34,13 @@ public static class ResolverContextExt
     /// 
     /// </summary>
     /// <inheritdoc cref="FillGraphqlParams{T}(HotChocolate.Resolvers.IResolverContext,IFreeSql)"/>
-    public static ISelect<T> FillGraphqlParams<T>(this IResolverContext context, IFreeSql db, out BasePagingInfo paging)
+    public static ISelect<T> FillGraphqlParams<T>(this IResolverContext context, IFreeSql db, out BasePagingInfo paging, bool requiredTotalCount = false)
         where T : class
     {
         var select = db.Select<T>();
 
         context.TryFillWhereParams(select);
-        paging = context.FillPagingParams(select, out var isInverseOrder);
+        paging = context.FillPagingParams(select, out var isInverseOrder, requiredTotalCount);
         context.TryFillSortingParams(select, isInverseOrder);
         return select;
     }

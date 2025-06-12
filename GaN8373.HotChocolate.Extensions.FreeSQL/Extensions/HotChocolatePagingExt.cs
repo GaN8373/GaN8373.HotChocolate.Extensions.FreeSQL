@@ -1,5 +1,6 @@
 ﻿using FreeSql;
 using FreeSql.Internal.Model;
+using HotChocolate.Language;
 using HotChocolate.Resolvers;
 using HotChocolate.Types;
 
@@ -18,7 +19,7 @@ public static class HotChocolatePagingExt
     /// <required>
     ///     <see cref="UsePagingAttribute" />
     /// </required>
-    public static BasePagingInfo FillPagingParams<T>(this IResolverContext context, ISelect<T> select, out bool isInverseOrder)
+    public static BasePagingInfo FillPagingParams<T>(this IResolverContext context, ISelect<T> select, out bool isInverseOrder, bool requireTotal = false)
         where T : class
     {
         isInverseOrder = false;
@@ -44,8 +45,17 @@ public static class HotChocolatePagingExt
             PageNumber = offset / take.Value + 1
         };
 
-        select.Page(basePagingInfo);
+
+        if (requireTotal || HasSelectedTotalCount(context) != null)
+            select.Page(basePagingInfo);
+        else
+            select.Page(basePagingInfo.PageNumber, basePagingInfo.PageSize);
 
         return basePagingInfo;
+    }
+
+    private static FieldNode? HasSelectedTotalCount(IResolverContext context)
+    {
+        return context.Selection.SyntaxNodes.FirstOrDefault(x => { return x.SelectionSet?.Selections.FirstOrDefault(y => y is FieldNode { Name.Value: "totalCount" }) != null; });
     }
 }
